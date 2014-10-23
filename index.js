@@ -4,7 +4,7 @@ var es = require('event-stream');
 var knox = require('knox');
 var gutil = require('gulp-util');
 var mime = require('mime');
-mime.default_type = 'text/plain';
+mime.default_type = 'text/html';
 
 module.exports = function (aws, options) {
   options = options || {};
@@ -14,7 +14,6 @@ module.exports = function (aws, options) {
   var client = knox.createClient(aws);
   var waitTime = 0;
   var regexGzip = /\.([a-z]{2,})\.gz$/i;
-  var regexGeneral = /\.([a-z0-9]{2,})$/i;
 
   return es.mapSync(function (file) {
 
@@ -40,7 +39,7 @@ module.exports = function (aws, options) {
       }
 
       // Set content type based of file extension
-      if (!headers['Content-Type'] && regexGeneral.test(uploadPath)) {
+      if (!headers['Content-Type']) {
         headers['Content-Type'] = mime.lookup(uploadPath);
         if (options.encoding) {
           headers['Content-Type'] += '; charset=' + options.encoding;
